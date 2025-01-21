@@ -511,24 +511,6 @@ fun IncomeAddTransactionDialog(
         containerColor = Color.DarkGray
     )
 }
-// Функція для отримання поточної дати у форматі "yyyy-MM-dd"
-fun incomeGetCurrentDate(): String {
-    val formatter = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
-    return formatter.format(java.util.Date())
-}
-
-// Функція для отримання дат останнього тижня у форматі "yyyy-MM-dd"
-fun getPastWeekDates(): List<String> {
-    val formatter = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
-    val calendar = java.util.Calendar.getInstance()
-    val dates = mutableListOf<String>()
-    for (i in 0..6) {
-        dates.add(formatter.format(calendar.time))
-        calendar.add(java.util.Calendar.DAY_OF_YEAR, -1)
-    }
-    return dates
-}
-
 @Composable
 fun IncomeTransactionItem(
     transaction: IncomeTransaction,
