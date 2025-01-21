@@ -304,7 +304,7 @@ fun ExpandableButtonWithAmount(
         )
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(0.95f) // Зменшення ширини фону
                 .padding(vertical = 8.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .background(gradient)
@@ -341,7 +341,6 @@ fun ExpandableButtonWithAmount(
         }
     }
 }
-
 @Composable
 fun IncomeList(
     incomes: Map<String, Double>,
