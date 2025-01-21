@@ -17,8 +17,15 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -874,6 +881,7 @@ fun IncomeAddIncomeTransactionDialog(
             calendar.get(Calendar.DAY_OF_MONTH)
         ).show()
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -885,10 +893,12 @@ fun IncomeAddIncomeTransactionDialog(
             modifier = Modifier
                 .align(Alignment.Center)
                 .padding(16.dp)
+                .border(2.dp, Color.White, RoundedCornerShape(8.dp)) // Додаємо білу рамку
                 .background(
-                    color = Color.Black.copy(alpha = 0.7f), // Чорний фон з більшою прозорістю
+                    color = Color.DarkGray, // Темно-сірий фон для діалогу
                     shape = RoundedCornerShape(8.dp)
                 )
+                .widthIn(max = 300.dp) // Зробити меню вужчим
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -896,7 +906,7 @@ fun IncomeAddIncomeTransactionDialog(
                 text = "Додати дохід",
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
-                    color = Color.Green // Зелений заголовок
+                    color = Color.Green // Зелений заголовок для кращого контрасту
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -920,7 +930,7 @@ fun IncomeAddIncomeTransactionDialog(
                     cursorColor = Color.White,
                     focusedLabelColor = Color.White,
                     unfocusedLabelColor = Color.Gray,
-                    containerColor = Color.Black.copy(alpha = 0.9f), // Менш прозорий чорний фон для поля вводу
+                    containerColor = Color.DarkGray, // Темно-сірий фон для поля вводу
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White
                 ),
@@ -935,12 +945,12 @@ fun IncomeAddIncomeTransactionDialog(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
                     .clip(RoundedCornerShape(4.dp)),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF616161))
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Yellow) // Жовта кнопка вибору дати
             ) {
                 Text(
                     text = "Дата: $date",
-                    color = Color.White,
-                    style = MaterialTheme.typography.bodyLarge
+                    color = Color.Black,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold) // Чорний жирний текст
                 )
             }
             ExposedDropdownMenuBox(
@@ -965,14 +975,14 @@ fun IncomeAddIncomeTransactionDialog(
                         unfocusedLabelColor = Color.Gray,
                         focusedTextColor = Color.White,
                         unfocusedTextColor = Color.White,
-                        containerColor = Color.Black.copy(alpha = 0.9f) // Менш прозорий чорний фон для поля вводу
+                        containerColor = Color.DarkGray // Темно-сірий фон для поля вводу
                     ),
                     textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White, fontWeight = FontWeight.Bold)
                 )
                 ExposedDropdownMenu(
                     expanded = isDropdownExpanded,
                     onDismissRequest = { isDropdownExpanded = false },
-                    modifier = Modifier.background(Color(0xFF2B2B2B))
+                    modifier = Modifier.background(Color.DarkGray)
                 ) {
                     categories.forEach { category ->
                         DropdownMenuItem(
@@ -986,87 +996,72 @@ fun IncomeAddIncomeTransactionDialog(
                                 selectedCategory = category
                                 isDropdownExpanded = false
                             },
-                            modifier = Modifier.background(Color(0xFF2B2B2B))
+                            modifier = Modifier.background(Color.DarkGray)
                         )
                     }
                     DropdownMenuItem(
                         text = {
                             Text(
                                 text = "Додати категорію",
-                                color = Color.Yellow,
+                                color = Color.White,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp // Збільшення розміру шрифту для кращої читабельності
                             )
                         },
-                        onClick = {
-                            val intent = Intent(context, IncomeActivity::class.java)
-                            context.startActivity(intent)
-                        },
-                        modifier = Modifier.background(Color(0xFF444444))
+                        modifier = Modifier
+                            .background(Color.DarkGray)
+                            .border(2.dp, Color.White, RoundedCornerShape(8.dp)) // Додаємо білу рамку
+                            .padding(8.dp),
+                        onClick = {}
                     )
                 }
             }
             OutlinedTextField(
                 value = comment,
-                onValueChange = { comment = it },
-                label = { Text("Коментар (необов'язково)", color = Color.Gray) },
+                onValueChange = { comment = it.takeIf { it.isNotBlank() } ?: "" },
+                label = { Text("Коментар", color = Color.Gray) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
-                singleLine = true,
+                singleLine = false,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     focusedBorderColor = Color.White,
                     unfocusedBorderColor = Color.Gray,
                     cursorColor = Color.White,
                     focusedLabelColor = Color.White,
                     unfocusedLabelColor = Color.Gray,
-                    containerColor = Color.Black.copy(alpha = 0.9f), // Менш прозорий чорний фон для поля вводу
+                    containerColor = Color.DarkGray, // Темно-сірий фон для поля вводу
                     focusedTextColor = Color.White,
                     unfocusedTextColor = Color.White
                 ),
-                textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White, fontWeight = FontWeight.Bold)
+                textStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White, fontWeight = FontWeight.Bold) // Білий і жирний текст
             )
-            Spacer(modifier = Modifier.height(16.dp))
-
+            Spacer(modifier = Modifier.height(8.dp))
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Button(
+                TextButton(
                     onClick = onDismiss,
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(4.dp)),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red.copy(alpha = 0.6f)
-                    )
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Text("Закрити", color = Color.White)
+                    Text("Скасувати", color = Color.White, fontWeight = FontWeight.Bold) // Білий жирний текст
                 }
-                Spacer(modifier = Modifier.width(16.dp))
-                Button(
+                Spacer(modifier = Modifier.width(8.dp))
+                TextButton(
                     onClick = {
-                        val amountValue = amount.toDoubleOrNull()
-                        if (amountValue != null && selectedCategory.isNotBlank() && date.isNotBlank()) {
-                            onSave(
-                                IncomeTransaction(
-                                    category = selectedCategory,
-                                    amount = amountValue, // Додаємо дохід зі знаком "+"
-                                    date = date,
-                                    comments = comment.takeIf { it.isNotBlank() }
-                                )
-                            )
-                            onDismiss()
-                        }
+                        val transaction = IncomeTransaction(
+                            id = UUID.randomUUID().toString(),
+                            amount = amount.toDoubleOrNull() ?: 0.0,
+                            date = date,
+                            category = selectedCategory,
+                            comments = comment.takeIf { it.isNotBlank() } // Використання takeIf для comments
+                        )
+                        onSave(transaction)
                     },
-                    modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(4.dp)),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Green.copy(alpha = 0.6f)
-                    )
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Text("Зберегти", color = Color.White)
+                    Text("Зберегти", color = Color.White, fontWeight = FontWeight.Bold) // Білий жирний текст
                 }
             }
         }
