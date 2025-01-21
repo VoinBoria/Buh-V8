@@ -49,6 +49,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.AndroidViewModel
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.compose.ui.zIndex
@@ -491,7 +492,8 @@ fun MainScreen(
                                     isExpanded = showIncomes,
                                     onClick = { showIncomes = !showIncomes },
                                     textColor = Color(0xFF00FF00), // Яскравий зелений колір тексту
-                                    fontWeight = FontWeight.Bold   // Жирний шрифт
+                                    fontWeight = FontWeight.Bold,  // Жирний шрифт
+                                    fontSize = 18.sp // Збільшення шрифту
                                 )
                             }
 
@@ -518,7 +520,8 @@ fun MainScreen(
                                     isExpanded = showExpenses,
                                     onClick = { showExpenses = !showExpenses },
                                     textColor = Color(0xFFFF0000), // Яскравий червоний колір тексту
-                                    fontWeight = FontWeight.Bold   // Жирний шрифт
+                                    fontWeight = FontWeight.Bold,  // Жирний шрифт
+                                    fontSize = 18.sp // Збільшення шрифту
                                 )
                             }
 
@@ -619,17 +622,17 @@ fun MainScreen(
                     ) {
                         FloatingActionButton(
                             onClick = { showAddIncomeTransactionDialog = true },
-                            containerColor = Color(0xFF228B22),
+                            containerColor = Color.LightGray, // Змінив колір на більш білий
                             modifier = Modifier.padding(end = 16.dp)
                         ) {
-                            Text("+", color = Color.White, style = MaterialTheme.typography.bodyLarge)
+                            Text("+", color = Color.Black, style = MaterialTheme.typography.bodyLarge) // Плюсик всередині чорний
                         }
 
                         FloatingActionButton(
                             onClick = { showAddExpenseTransactionDialog = true },
-                            containerColor = Color(0xFFDC143C)
+                            containerColor = Color(0xFF2F2F2F) // Зробити ще темніший сірий колір
                         ) {
-                            Text("+", color = Color.White, style = MaterialTheme.typography.bodyLarge)
+                            Text("+", color = Color.White, style = MaterialTheme.typography.bodyLarge) // Плюсик всередині білий
                         }
                     }
                 }
