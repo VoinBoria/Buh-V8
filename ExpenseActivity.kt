@@ -340,15 +340,10 @@ class ExpenseViewModel(application: Application) : AndroidViewModel(application)
         sendUpdateBroadcast()
     }
 
+    // Функція для збереження транзакцій
     private fun saveTransactions(transactions: List<Transaction>) {
-        val negativeTransactions = transactions.map { transaction ->
-            if (transaction.amount > 0) transaction.copy(amount = -transaction.amount)
-            else transaction
-        }
-        Log.d(TAG, "Saving transactions: $negativeTransactions")
-        sharedPreferences.edit().putString("transactions", gson.toJson(negativeTransactions)).apply()
-
-        // Відправка broadcast
+        Log.d(TAG, "Saving transactions: $transactions")
+        sharedPreferences.edit().putString("transactions", gson.toJson(transactions)).apply()
         sendUpdateBroadcast()
     }
 
