@@ -397,12 +397,11 @@ fun IncomeTransactionScreen(
             Text(
                 text = "${totalIncomeForFilteredTransactions.incomeFormatAmount(2)} грн",
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                color = Color.White
+                color = Color.Green // Зелений колір для суми доходів
             )
         }
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IncomeAddTransactionDialog(
@@ -467,6 +466,7 @@ fun IncomeAddTransactionDialog(
                     value = comment,
                     onValueChange = { comment = it },
                     label = { Text("Коментар", style = TextStyle(color = Color.White)) },
+                    textStyle = TextStyle(color = Color.White, fontWeight = FontWeight.Bold),  // Білий шрифт для введення коментаря
                     colors = TextFieldDefaults.textFieldColors(
                         cursorColor = Color.White,
                         focusedIndicatorColor = Color.White,
@@ -540,39 +540,33 @@ fun IncomeTransactionItem(
             .padding(8.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF006400).copy(alpha = 0.7f),
-                        Color(0xFF228B22).copy(alpha = 0.1f)  // Dark transparent at the bottom
-                    )
-                )
-            )
-            .background(
                 brush = Brush.horizontalGradient(
                     colors = listOf(
-                        Color(0xFF006400).copy(alpha = 0.7f),
-                        Color(0xFF228B22).copy(alpha = 0.1f)  // Almost fully transparent on the right
-                    )
+                        Color.DarkGray.copy(alpha = 0.9f), // Темно-сірий зліва
+                        Color.DarkGray.copy(alpha = 0.1f)  // Майже прозорий справа
+                    ),
+                    startX = 0f,
+                    endX = 300f  // Налаштовано так, щоб градієнт став майже прозорим з половини
                 )
             )
             .clickable(onClick = onClick)
-            .padding(16.dp) // Inner padding
+            .padding(16.dp) // Внутрішній відступ
     ) {
         Column {
             Text(
                 text = "Сума: ${transaction.amount} грн",
-                style = MaterialTheme.typography.bodyLarge.copy(color = Color.White),
+                style = MaterialTheme.typography.bodyLarge.copy(color = Color.Green),
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             Text(
                 text = "Дата: ${transaction.date}",
-                style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray),
+                style = MaterialTheme.typography.bodyMedium.copy(color = Color.Green),
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             if (!transaction.comments.isNullOrEmpty()) {
                 Text(
                     text = "Коментар: ${transaction.comments}",
-                    style = MaterialTheme.typography.bodySmall.copy(color = Color.LightGray)
+                    style = MaterialTheme.typography.bodySmall.copy(color = Color.Green)
                 )
             }
         }
