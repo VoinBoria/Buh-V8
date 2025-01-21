@@ -1,6 +1,5 @@
 package com.serhio.homeaccountingapp;
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -12,7 +11,6 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -22,7 +20,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -34,32 +31,27 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Text
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import kotlinx.coroutines.delay
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.compose.ui.zIndex
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.rememberPagerState
 
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -366,7 +358,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         loadStandardCategories()
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     onNavigateToMainActivity: () -> Unit,
@@ -424,6 +416,7 @@ fun MainScreen(
     }
 
     val context = LocalContext.current
+    val pagerState = rememberPagerState()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -510,18 +503,12 @@ fun MainScreen(
                             Spacer(modifier = Modifier.height(32.dp))
 
                             // Діаграми доходів та витрат
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                // Діаграма доходів
-                                IncomeExpenseChart(
-                                    incomes = incomes,
-                                    expenses = expenses,
-                                    totalIncomes = totalIncomes,
-                                    totalExpenses = totalExpenses
-                                )
-                            }
+                            IncomeExpenseChart(
+                                incomes = incomes,
+                                expenses = expenses,
+                                totalIncomes = totalIncomes,
+                                totalExpenses = totalExpenses
+                            )
                         }
                     }
 
