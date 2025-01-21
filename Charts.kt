@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
@@ -462,31 +463,43 @@ fun CategoryItem(
     }
 }
 
-@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun BalanceDisplay(balance: Double, modifier: Modifier = Modifier) {
     val formattedBalance = "%,.2f".format(balance).replace(",", " ")
+    val balanceColor = when {
+        balance < 0 -> Color.Red
+        balance > 0 -> Color.Green
+        else -> Color.White
+    }
 
     Column(
         modifier = modifier
-            .padding(16.dp)
-            .wrapContentWidth(Alignment.Start)
+            .padding(start = 16.dp, bottom = 25.dp)
+            .width(IntrinsicSize.Max)
     ) {
-        Text(
-            text = "Залишок:",
-            style = MaterialTheme.typography.bodyLarge.copy(
-                fontSize = 30.sp, // Менший шрифт для заголовка
-                color = Color.White,
-                fontWeight = FontWeight.Bold
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier.height(56.dp) // Встановлюємо висоту контейнера для вирівнювання з кнопками
+        ) {
+            Text(
+                text = "Залишок:",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontSize = 24.sp, // Збільшуємо шрифт для заголовка
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier.padding(bottom = 4.dp) // Налаштовуємо відступ для вирівнювання
             )
-        )
-        Text(
-            text = "$formattedBalance грн",
-            style = MaterialTheme.typography.bodyLarge.copy(
-                fontSize = 25.sp, // Менший шрифт для суми
-                color = Color.White,
-                fontWeight = FontWeight.Bold
+            Text(
+                text = "$formattedBalance грн",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontSize = 22.sp, // Збільшуємо шрифт для суми
+                    color = balanceColor, // Колір тексту залежить від суми
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier.align(Alignment.Start) // Вирівнюємо текст по лівому краю
             )
-        )
+        }
     }
 }
