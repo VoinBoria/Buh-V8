@@ -27,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +39,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import kotlinx.coroutines.launch
+
 @OptIn(ExperimentalPagerApi::class)
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
@@ -87,7 +89,7 @@ fun IncomeExpenseChart(
                                 containerColor = if (pagerState.currentPage == 0) Color.Gray else Color.Transparent
                             )
                         ) {
-                            Text("Доходи", color = Color.White)
+                            Text("Доходи", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         TextButton(
@@ -96,7 +98,7 @@ fun IncomeExpenseChart(
                                 containerColor = if (pagerState.currentPage == 1) Color.Gray else Color.Transparent
                             )
                         ) {
-                            Text("Витрати", color = Color.White)
+                            Text("Витрати", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                         }
                     }
 
@@ -278,7 +280,6 @@ fun generateDistinctColors(count: Int, excludeRed: Boolean = false, excludeGreen
     return List(count) { filteredColors[it % filteredColors.size] }
 }
 
-// Функція форматування чисел із пробілами між тисячами
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun ExpandableButtonWithAmount(
@@ -286,11 +287,13 @@ fun ExpandableButtonWithAmount(
     amount: Double,
     gradientColors: List<Color>,
     isExpanded: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    textColor: Color = Color.White, // Додаємо параметр для кольору тексту
+    fontWeight: FontWeight = FontWeight.Bold // Додаємо параметр для жирності шрифту
 ) {
     BoxWithConstraints {
         val screenWidth = maxWidth
-        val fontSize = if (screenWidth < 360.dp) 14.sp else 18.sp
+        val fontSize = if (screenWidth < 360.dp) 14.sp else 20.sp
         val padding = if (screenWidth < 360.dp) 8.dp else 16.dp
 
         val gradient = Brush.horizontalGradient(
@@ -314,32 +317,31 @@ fun ExpandableButtonWithAmount(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = text,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = fontSize
-                )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "${"%.2f".format(amount)} грн",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = fontSize
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = if (isExpanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
                         contentDescription = null,
-                        tint = Color.White
+                        tint = textColor
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = text,
+                        color = textColor,
+                        fontWeight = fontWeight,
+                        fontSize = fontSize
                     )
                 }
+                Text(
+                    text = "${"%.2f".format(amount)} грн",
+                    color = textColor,
+                    fontWeight = fontWeight,
+                    fontSize = fontSize
+                )
             }
         }
     }
 }
+
 @Composable
 fun IncomeList(
     incomes: Map<String, Double>,
@@ -358,14 +360,6 @@ fun IncomeList(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp, horizontal = 8.dp)
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(Color(0x99000000), Color(0x66000000)),
-                            start = Offset(0f, 0f),
-                            end = Offset(1f, 0f)
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    )
                     .clickable { onCategoryClick(category) } // Додаємо обробку натискання
             ) {
                 Row(
@@ -407,14 +401,6 @@ fun ExpensesList(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp, horizontal = 8.dp)
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(Color(0x99000000), Color(0x66000000)),
-                            start = Offset(0f, 0f),
-                            end = Offset(1f, 0f)
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    )
                     .clickable { onCategoryClick(category) } // Додаємо обробку натискання
             ) {
                 Row(
