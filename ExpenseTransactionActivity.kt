@@ -122,7 +122,7 @@ class ExpenseTransactionActivity : ComponentActivity() {
                                     initialTransactions = filteredTransactions, // Передаємо фільтровані транзакції
                                     onUpdateTransactions = { updatedTransactions ->
                                         viewModel.updateTransactions(updatedTransactions)
-                                        saveTransactionsToStorage(updatedTransactions, categoryName)
+                                        saveTransactionsToStorage(updatedTransactions) // Видалено зайвий параметр categoryName
                                     }
                                 )
                             }
@@ -138,20 +138,23 @@ class ExpenseTransactionActivity : ComponentActivity() {
         startActivity(intent)
     }
 
-    private fun saveTransactionsToStorage(updatedTransactions: List<Transaction>, categoryName: String) {
+    private fun saveTransactionsToStorage(updatedTransactions: List<Transaction>) {
         val sharedPreferences = getSharedPreferences("ExpensePrefs", MODE_PRIVATE)
         val gson = Gson()
+        val existingTransactionsJson = sharedPreferences.getString("transactions", "[]") ?: "[]"
+        val type = object : TypeToken<List<Transaction>>() {}.type
+        val existingTransactions: List<Transaction> = gson.fromJson(existingTransactionsJson, type)
 
-        val existingTransactions = try {
-            val transactionsJson = sharedPreferences.getString("transactions", "[]") ?: "[]"
-            val type = object : TypeToken<List<Transaction>>() {}.type
-            gson.fromJson<List<Transaction>>(transactionsJson, type)
-        } catch (e: Exception) {
-            emptyList()
-        }
+        // Оновлюємо список транзакцій, зберігаючи всі існуючі, які не були оновлені
+        val updatedList = existingTransactions.map { existingTransaction ->
+            updatedTransactions.find { it.id == existingTransaction.id } ?: existingTransaction
+        }.toMutableList()
 
-        // Оновлюємо список транзакцій для конкретної категорії
-        val updatedList = existingTransactions.filter { it.category != categoryName } + updatedTransactions
+        // Додаємо нові транзакції, які не були в існуючих
+        updatedTransactions.filter { updatedTransaction ->
+            existingTransactions.none { it.id == updatedTransaction.id }
+        }.forEach { updatedList.add(it) }
+
         val newTransactionsJson = gson.toJson(updatedList)
 
         // Зберігаємо транзакції в SharedPreferences
@@ -232,8 +235,6 @@ fun ExpenseTransactionScreen(
                     showEditDialog = true
                 },
                 onDelete = {
-                    transactions = transactions.filter { it.id != selectedTransaction!!.id }.toMutableList()
-                    onUpdateTransactions(transactions)
                     viewModel.deleteTransaction(selectedTransaction!!)
                     showMenuDialog = false
                 }
@@ -244,10 +245,6 @@ fun ExpenseTransactionScreen(
                 transaction = selectedTransaction!!,
                 onDismiss = { showEditDialog = false },
                 onSave = { updatedTransaction ->
-                    transactions = transactions.map {
-                        if (it.id == selectedTransaction!!.id) updatedTransaction else it
-                    }.toMutableList()
-                    onUpdateTransactions(transactions)
                     viewModel.updateTransaction(updatedTransaction)
                     showEditDialog = false
                 }
