@@ -475,7 +475,7 @@ fun MainScreen(
                         ) {
                             Box(
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .fillMaxWidth(0.9f) // Зменшення ширини фону
                                     .padding(vertical = 8.dp)
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(Color.Gray.copy(alpha = 0.2f), RoundedCornerShape(10.dp))
@@ -502,7 +502,7 @@ fun MainScreen(
 
                             Box(
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .fillMaxWidth(0.9f) // Зменшення ширини фону
                                     .padding(vertical = 8.dp)
                                     .clip(RoundedCornerShape(10.dp))
                                     .background(Color.Gray.copy(alpha = 0.2f), RoundedCornerShape(10.dp))
