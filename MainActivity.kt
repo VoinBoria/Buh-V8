@@ -31,6 +31,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.text.font.FontWeight
@@ -46,6 +47,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -471,31 +473,55 @@ fun MainScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            ExpandableButtonWithAmount(
-                                text = "Загальні доходи",
-                                amount = totalIncomes,
-                                gradientColors = listOf(
-                                    Color(0xFF006400),
-                                    Color(0x200032CD32)
-                                ),
-                                isExpanded = showIncomes,
-                                onClick = { showIncomes = !showIncomes }
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(Color.Gray.copy(alpha = 0.2f), RoundedCornerShape(10.dp))
+                                    .border(1.dp, Color.Gray, RoundedCornerShape(10.dp))
+                            ) {
+                                ExpandableButtonWithAmount(
+                                    text = "Загальні доходи",
+                                    amount = totalIncomes,
+                                    gradientColors = listOf(
+                                        Color.Transparent,
+                                        Color.Transparent
+                                    ),
+                                    isExpanded = showIncomes,
+                                    onClick = { showIncomes = !showIncomes },
+                                    textColor = Color(0xFF00FF00), // Яскравий зелений колір тексту
+                                    fontWeight = FontWeight.Bold   // Жирний шрифт
+                                )
+                            }
+
                             if (showIncomes) {
                                 IncomeList(incomes = incomes, onCategoryClick = onIncomeCategoryClick)
                             }
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            ExpandableButtonWithAmount(
-                                text = "Загальні витрати",
-                                amount = totalExpenses,
-                                gradientColors = listOf(
-                                    Color(0xFF8B0000),
-                                    Color(0x20B22222)
-                                ),
-                                isExpanded = showExpenses,
-                                onClick = { showExpenses = !showExpenses }
-                            )
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(Color.Gray.copy(alpha = 0.2f), RoundedCornerShape(10.dp))
+                                    .border(1.dp, Color.Gray, RoundedCornerShape(10.dp))
+                            ) {
+                                ExpandableButtonWithAmount(
+                                    text = "Загальні витрати",
+                                    amount = totalExpenses,
+                                    gradientColors = listOf(
+                                        Color.Transparent,
+                                        Color.Transparent
+                                    ),
+                                    isExpanded = showExpenses,
+                                    onClick = { showExpenses = !showExpenses },
+                                    textColor = Color(0xFFFF0000), // Яскравий червоний колір тексту
+                                    fontWeight = FontWeight.Bold   // Жирний шрифт
+                                )
+                            }
+
                             if (showExpenses) {
                                 ExpensesList(expenses = expenses, onCategoryClick = onExpenseCategoryClick)
                             }
