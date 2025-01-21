@@ -38,6 +38,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
+import androidx.compose.ui.unit.TextUnit
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
@@ -289,11 +290,11 @@ fun ExpandableButtonWithAmount(
     isExpanded: Boolean,
     onClick: () -> Unit,
     textColor: Color = Color.White, // Додаємо параметр для кольору тексту
-    fontWeight: FontWeight = FontWeight.Bold // Додаємо параметр для жирності шрифту
+    fontWeight: FontWeight = FontWeight.Bold, // Додаємо параметр для жирності шрифту
+    fontSize: TextUnit = 24.sp // Збільшення шрифту
 ) {
     BoxWithConstraints {
         val screenWidth = maxWidth
-        val fontSize = if (screenWidth < 360.dp) 14.sp else 20.sp
         val padding = if (screenWidth < 360.dp) 8.dp else 16.dp
 
         val gradient = Brush.horizontalGradient(
