@@ -205,14 +205,6 @@ fun ExpenseTransactionScreen(
                 )
         )
         Column(modifier = Modifier.fillMaxSize()) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "Транзакції за сьогодні",
-                style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White),
-                modifier = Modifier.padding(16.dp)
-            )
-
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(filteredTransactions.filter { it.category == categoryName }) { transaction ->
                     TransactionItem(
@@ -287,100 +279,12 @@ fun ExpenseTransactionScreen(
             Text(
                 text = "${totalExpenseForFilteredTransactions.formatAmount(2)} грн",
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                color = Color.White
+                color = Color.Red // Червоний колір для загальної суми
             )
         }
     }
 }
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun ExpenseTransactionPeriodButton(viewModel: ExpenseViewModel, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-    val dialogState = remember { mutableStateOf(false) }
-    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val startDate = remember { mutableStateOf(LocalDate.now()) }
-    val endDate = remember { mutableStateOf(LocalDate.now()) }
 
-    OutlinedButton(
-        onClick = { dialogState.value = true },
-        modifier = modifier.size(120.dp, 40.dp), // Збільшуємо ширину кнопки
-        border = BorderStroke(1.dp, Color.Gray)
-    ) {
-        Text("Період", fontWeight = FontWeight.Bold, color = Color.White)
-    }
-
-    if (dialogState.value) {
-        AlertDialog(
-            onDismissRequest = { dialogState.value = false },
-            title = {
-                Text("Вибір періоду", style = TextStyle(color = Color.White, fontWeight = FontWeight.Bold))
-            },
-            text = {
-                Column {
-                    ExpenseTransactionDatePickerField(
-                        label = "Початкова дата",
-                        date = startDate.value,
-                        onDateSelected = { date -> startDate.value = date }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ExpenseTransactionDatePickerField(
-                        label = "Кінцева дата",
-                        date = endDate.value,
-                        onDateSelected = { date -> endDate.value = date }
-                    )
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        viewModel.filterTransactionsByPeriod(startDate.value, endDate.value)
-                        dialogState.value = false
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF388E3C)),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text("Зберегти", style = MaterialTheme.typography.bodyLarge)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { dialogState.value = false }) {
-                    Text("Скасувати", style = TextStyle(color = Color.White, fontWeight = FontWeight.Bold))
-                }
-            },
-            containerColor = Color.DarkGray
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun ExpenseTransactionDatePickerField(label: String, date: LocalDate, onDateSelected: (LocalDate) -> Unit) {
-    val context = LocalContext.current
-    OutlinedButton(onClick = {
-        showExpenseTransactionDatePickerDialog(context, date, onDateSelected)
-    }) {
-        Text(text = "$label: ${date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))}", style = TextStyle(color = Color.White, fontWeight = FontWeight.Bold))
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun showExpenseTransactionDatePickerDialog(context: Context, initialDate: LocalDate, onDateSelected: (LocalDate) -> Unit) {
-    val calendar = Calendar.getInstance()
-    calendar.set(initialDate.year, initialDate.monthValue - 1, initialDate.dayOfMonth)
-    DatePickerDialog(
-        context,
-        { _, selectedYear, selectedMonth, selectedDay ->
-            val selectedDate = LocalDate.of(selectedYear, selectedMonth + 1, selectedDay)
-            onDateSelected(selectedDate)
-        },
-        calendar.get(Calendar.YEAR),
-        calendar.get(Calendar.MONTH),
-        calendar.get(Calendar.DAY_OF_MONTH)
-    ).show()
-}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTransactionDialog(
@@ -445,6 +349,7 @@ fun AddTransactionDialog(
                     value = comment,
                     onValueChange = { comment = it },
                     label = { Text("Коментар", style = TextStyle(color = Color.White)) },
+                    textStyle = TextStyle(color = Color.White, fontWeight = FontWeight.Bold), // Білий шрифт для введення коментаря
                     colors = TextFieldDefaults.textFieldColors(
                         cursorColor = Color.White,
                         focusedIndicatorColor = Color.White,
@@ -491,21 +396,6 @@ fun AddTransactionDialog(
     )
 }
 
-fun getCurrentDate(): String {
-    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    return formatter.format(Date())
-}
-// Функція для отримання дат останнього тижня у форматі "yyyy-MM-dd"
-fun getPastWeekExpenseDates(): List<String> {
-    val formatter = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
-    val calendar = java.util.Calendar.getInstance()
-    val dates = mutableListOf<String>()
-    for (i in 0..6) {
-        dates.add(formatter.format(calendar.time))
-        calendar.add(java.util.Calendar.DAY_OF_YEAR, -1)
-    }
-    return dates
-}
 // Використовуємо стандартний DatePickerDialog для вибору дати
 @Composable
 fun DatePickerDialogComponent(onDateSelected: (String) -> Unit) {
@@ -537,39 +427,33 @@ fun TransactionItem(
             .padding(8.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0x99D32F2F), // Transparent red at the top
-                        Color(0xB0000000)  // Dark transparent at the bottom
-                    )
-                )
-            )
-            .background(
                 brush = Brush.horizontalGradient(
                     colors = listOf(
-                        Color(0x99D32F2F), // Transparent red on the left
-                        Color(0x00000000)  // Almost fully transparent on the right
-                    )
+                        Color.DarkGray.copy(alpha = 0.9f), // Темно-сірий зліва
+                        Color.DarkGray.copy(alpha = 0.1f)  // Майже прозорий справа
+                    ),
+                    startX = 0f,
+                    endX = 300f  // Налаштовано так, щоб градієнт став майже прозорим з половини
                 )
             )
             .clickable(onClick = onClick)
-            .padding(16.dp) // Inner padding
+            .padding(16.dp) // Внутрішній відступ
     ) {
         Column {
             Text(
                 text = "Сума: ${transaction.amount} грн",
-                style = MaterialTheme.typography.bodyLarge.copy(color = Color.White),
+                style = MaterialTheme.typography.bodyLarge.copy(color = Color.Red),
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             Text(
                 text = "Дата: ${transaction.date}",
-                style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray),
+                style = MaterialTheme.typography.bodyMedium.copy(color = Color.Red),
                 modifier = Modifier.padding(bottom = 4.dp)
             )
             if (!transaction.comments.isNullOrEmpty()) {
                 Text(
                     text = "Коментар: ${transaction.comments}",
-                    style = MaterialTheme.typography.bodySmall.copy(color = Color.LightGray)
+                    style = MaterialTheme.typography.bodySmall.copy(color = Color.Red)
                 )
             }
         }
